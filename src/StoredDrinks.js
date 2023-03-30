@@ -1,9 +1,13 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Drink from './Drink';
+import useRemoveDrink from './useRemoveDrink';
 
 
 export default function StoredDrinks() {
   const [storage, setStorage] = useState([]);
+
+  // use our custom hook to remove from local storage
+  const removeDrink = useRemoveDrink(storage, setStorage);
 
   // instead of starting with localstorage.drink in the state we use
   // useEffect to retrieve the data from localstorage.drink
@@ -11,15 +15,6 @@ export default function StoredDrinks() {
     const drinks = JSON.parse(localStorage.getItem('drinks')) || [];
     setStorage(drinks);
   }, []);
-
-  // We can use useCallback to remember the removeDrink
-  // function. This removes re-renders in the background.
-  const removeDrink = useCallback((id) => {
-    const newDrinksList = storage.filter((drink) => drink.id !== id);
-
-    localStorage.setItem('drinks', JSON.stringify(newDrinksList));
-    setStorage(newDrinksList);
-  }, [storage]); // passa in storage i listan
 
   // Instead of parsing storage multiple times or checking if it's
   // longer than one, we can render it conditionally in the return. 

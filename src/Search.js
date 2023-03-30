@@ -1,13 +1,15 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Drink from './Drink';
 import Nav from './Nav';
+import useRemoveDrink from './useRemoveDrink';
+import useAddDrink from './useAddDrink';
+
 
 export default function Search() {
 
   const inputValue = useRef("");                                  // Saves the value of the input element
   const [drinks, setDrinks] = useState([]);                       // Saves the api-result
   const [storage, setStorage] = useState([]);
-  const [change, setChange] = useState(true);
   const baseUrl = 'https://thecocktaildb.com/api/json/v1/1/';     // Store url in variable 
 
   const clearDrinksState = () => {
@@ -18,6 +20,12 @@ export default function Search() {
     clearDrinksState();
   }
 
+  // use our custom hook to remove from local storage
+  const removeDrink = useRemoveDrink(storage, setStorage);
+
+  // use our custom hook to add a drink to local storage
+  const addDrink = useAddDrink();
+
   // instead of starting with localstorage.drink in the state we use
   // useEffect to retrieve the data from localstorage.drink
   useEffect(() => {
@@ -25,14 +33,6 @@ export default function Search() {
     setStorage(drinks);
   }, []);
 
-  // We can use useCallback to remember the removeDrink
-  // function. This removes re-renders in the background.
-  const removeDrink = useCallback((id) => {
-    const newDrinksList = storage.filter((drink) => drink.id !== id);
-
-    localStorage.setItem('drinks', JSON.stringify(newDrinksList));
-    setStorage(newDrinksList);
-  }, [storage]);
 
   // Fetch data from api and throw an error if the data can't be fetched. 
   async function getData(resourceQuery, p) {
@@ -82,12 +82,6 @@ export default function Search() {
       alert('You have to enter atleast one character in the search field');
     }
     inputValue.current.value = '';
-  }
-
-  function addDrink(drink) {
-    storage.push(drink);
-    localStorage.setItem("drinks", JSON.stringify(storage));
-    setChange(!change);
   }
 
   function searchOnEnter(event) {
