@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState } from 'react'
 import Drink from './Drink';
 import Nav from './Nav';
 import useRemoveDrink from './useRemoveDrink';
@@ -25,13 +25,6 @@ export default function Search() {
 
   // use our custom hook to add a drink to local storage
   const addDrink = useAddDrink();
-
-  // instead of starting with localstorage.drink in the state we use
-  // useEffect to retrieve the data from localstorage.drink
-  useEffect(() => {
-    const drinks = JSON.parse(localStorage.getItem('drinks')) || [];
-    setStorage(drinks);
-  }, []);
 
 
   // Fetch data from api and throw an error if the data can't be fetched. 
