@@ -2,61 +2,33 @@ import React from "react";
 
 export default function Drink(props) {
 
-  // Checks if the drink in question is in LocalStorage.
-  // If the drink is in LS a button element is returned with a onClick handler which can remove it from LS,
-  // otherwise a different button element is returned which can add the drink to the Local Storage. 
-  
+  // Returns a button element that can either add or remove the drink item from the localStorage
   function addOrDelBtn(id) {
-    let storage = localStorage.drinks;
-    let newStorage;
-    storage === undefined
-      ? (newStorage = [])
-      : (newStorage = JSON.parse(storage));
+    // Load the drinks from localStorage, or create an empty array if it doesn't exist.
+    const storage = JSON.parse(localStorage.getItem("drinks")) || [];
 
-    if (newStorage.length === 0) {
-      return (
-        <button
-          className="btn btn-sm btn-success align-self-start"
-          onClick={() => {
-            props.addDrink(props.item);
-          }}
-        >
-          Add
-        </button>
-      );
-    } else {
-      let isInStorage = false;
-      for (let i = 0; i < newStorage.length; i++) {
-        if (newStorage[i].id === id) {
-          isInStorage = true;
-        }
-      }
+    // Check if the current drink item is already in localStorage.
+    const isInStorage = storage.some((drink) => drink.id === id);
 
-      if (isInStorage === true) {
-        return (
-          <button
-            className="btn btn-sm btn-danger align-self-start"
-            onClick={() => {
-              props.removeDrink(props.item.id);
-            }}
-          >
-            Remove
-          </button>
-        );
-      } else {
-        return (
-          <button
-            className="btn btn-sm btn-success align-self-start"
-            onClick={() => {
-              props.addDrink(props.item);
-            }}
-          >
-            Add
-          </button>
-        );
-      }
-    }
+    // Determine the class name and text for the button.
+    const buttonClassName = `btn btn-sm ${
+      isInStorage ? "btn-danger" : "btn-success"
+    } align-self-start`;
+
+    const buttonText = isInStorage ? "Remove" : "Add";
+
+    // Click handler for the button, depending on whether the drink is in localStorage or not.
+    const handleClick = () =>
+      isInStorage ? props.removeDrink(props.item.id) : props.addDrink(props.item);
+
+    // Return the button element 
+    return (
+      <button className={buttonClassName} onClick={handleClick}>
+        {buttonText}
+      </button>
+    );
   }
+
 
   return (
     <React.Fragment>
